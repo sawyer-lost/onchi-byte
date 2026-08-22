@@ -15,10 +15,10 @@ Discussion
 
 The team discussed the project requirements and decided to divide the work into four main areas.
 
-* Izhan: STC89C52 CPU / architecture study
+* Hisham: STC89C52 CPU / architecture study
 * Punarvi: Memory & Stack study
 * Keora: Data Structures & Process Management
-* Hisham: OS Scheduling & Simulator Planning
+* Izhan: OS Scheduling & Simulator Planning
 
 The secondary responsibilities were also divided:
 
