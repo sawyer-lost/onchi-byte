@@ -1,0 +1,55 @@
+Week 1 — Maintain Meeting Minutes
+
+Date: 22 August 2026
+Meeting Number: 01
+Participants: Izhan, Keora, Hisham, Punarvi
+
+Agenda
+
+1. Understand the Week 1 project requirements.
+2. Divide the responsibilities among the four members.
+3. Discuss the STC89C52 architecture, memory, data structures, and OS scheduling.
+4. Decide the GitHub and documentation responsibilities.
+
+Discussion
+
+The team discussed the project requirements and decided to divide the work into four main areas.
+
+* Izhan: STC89C52 CPU / architecture study
+* Punarvi: Memory & Stack study
+* Keora: Data Structures & Process Management
+* Hisham: OS Scheduling & Simulator Planning
+
+The secondary responsibilities were also divided:
+
+* Izhan: UI design
+* Punarvi: Architecture diagram
+* Keora: Testing plan
+* Hisham: GitHub + integration
+
+The team agreed that each member will study their assigned topic and contribute to the project documentation.
+
+Decisions
+
+1. The four members will follow the assigned primary and secondary responsibilities.
+2. GitHub will be used for project work and integration.
+3. Each member will contribute to the project using their own GitHub account.
+4. Technical decisions and important discussions will be recorded in the project documentation.
+
+Action Items
+
+Student 1 — Izhan:
+Study STC89C52 CPU/architecture and work on UI design.
+
+Student 2 — Punarvi:
+Study memory and stack concepts and prepare the architecture diagram.
+
+Student 3 — Keora:
+Study data structures and process management and prepare the testing plan.
+
+Student 4 — Hisham:
+Study OS scheduling and simulator planning and handle GitHub integration.
+
+Next Meeting
+
+The team will review everyone’s study work, discuss any doubts, and finalize the initial simulator design and development plan.
