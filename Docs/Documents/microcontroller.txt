@@ -1,7 +1,7 @@
 STC89C52 is a 8 bit microcontroller
 It is based on 8051 architecture
  It contains CPU, memory, registers, GPIO ports, timers and interrupts etc, It is used to control different electronic devices
- we use microcontroller because it contain every above element's at once if it wasn't there we shoud add every item like cpu, register etc sepretily thats the benefit of microcontroller 
+ we use microcontroller because it contain every above element's at once if it wasn't there we shoud add every item like cpu, register etc sepretily and manually thats the benefit of microcontroller 
  The CPU is the Main partt of the microcontroller It is responsible for executing the instructions and processing the data,The CPU contains different registers which are used for storing data and addresses temporarily
        A register is a 8 bit registerr, It is mainly used for arithmetic and logical operations. For example, if we add two numbers, the result can be stored in A register
   A Register can't use for multiplication and division and its aslo called as ACCUMULATER
