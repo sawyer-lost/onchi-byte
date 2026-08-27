@@ -1,15 +1,1 @@
-STC89C52 is a 8 bit microcontroller
-It is based on 8051 architecture
- It contains CPU, memory, registers, GPIO ports, timers and interrupts etc, It is used to control different electronic devices
- we use microcontroller because it contain every above element's at once if it wasn't there we shoud add every item like cpu, register etc sepretily and manually thats the benefit of microcontroller 
- The CPU is the Main partt of the microcontroller It is responsible for executing the instructions and processing the data,The CPU contains different registers which are used for storing data and addresses temporarily
-       A register is a 8 bit registerr, It is mainly used for arithmetic and logical operations. For example, if we add two numbers, the result can be stored in A register
-  A Register can't use for multiplication and division and its aslo called as ACCUMULATER
-  
-  The B register is also a 8 bit register.It is mainly used in multiplication and division operations,. In multiplication A and B registers are used together.
-  
-  There are R0 to R7 registers. These are general purpose registers and each register is 8 bit
-  
-  next register is pc(program counter ) it stores the address of next instruction that will executed by cpu later 
-  its an 16 bit register 
-  Spis a 8 bit register. It is used to point the top of the stack.stack is a memory Area used for temporarily storing data. The stack follows LIFO(meaning =last in firstbout)
+
