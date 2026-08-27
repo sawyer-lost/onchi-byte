@@ -80,7 +80,7 @@ The project is planned to analyse:
 <img src="https://i.ibb.co/jv8ZQ5qZ/IMG-20260826-132908-942.jpg" width="100" height="100" style="border-radius:50%;"><br>
 <b>Punarvi</b>
 </td><td align="center">
-<img src="https://i.ibb.co/GQ6DcyD0/x.jpg" width="100" height="100" style="border-radius:50%;"><br>
+<img src="https://i.ibb.co/dsGYSZRZ/IMG-20260827-WA0035.jpg" width="100" height="100" style="border-radius:50%;"><br>
 <b>Hisham</b>
 </td></tr>
 </table>---
