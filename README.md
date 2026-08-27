@@ -4,13 +4,13 @@
 
 ---
 
-📌 About The Project
+📌 **About The Project**
 
 This project is an educational simulator for the STC89C52 8-bit microcontroller.
 
 The main aim of this project is to understand how a microcontroller execute instructions, use memory and manage multiple programs.
 
-This project combines:
+**This project combines:**
 
 - Microprocessor Architecture
 - Data Structures
@@ -18,7 +18,7 @@ This project combines:
 
 ---
 
-🎯 Problem Statement
+🎯 **Problem Statement**
 
 We are planning to develop a software based simulator for the STC89C52 microcontroller.
 
@@ -36,7 +36,7 @@ The project will also study Process Management and CPU Scheduling concepts.
 
 ---
 
-🔧 Planned Concepts
+🔧 **Planned Concepts**
 
 The simulator is planned to include:
 
@@ -55,7 +55,7 @@ The simulator is planned to include:
 
 ---
 
-📊 Performance Analysis
+📊 **Performance Analysis**
 
 The project is planned to analyse:
 
@@ -67,7 +67,7 @@ The project is planned to analyse:
 
 ---
 
-👨‍💻 Developers
+👨‍💻 **Developers**
 
 <table>
 <tr><td align="center">
@@ -85,7 +85,7 @@ The project is planned to analyse:
 </td></tr>
 </table>---
 
-🌱 Goal
+🌱 **Goal**
 
 The goal of this project is to make a simple simulator which help students understand how the STC89C52 works and how multiple programs can be managed using CPU Scheduling.
 
