@@ -106,6 +106,19 @@ The initial system architecture consists of different modules that work together
 The architecture includes the CPU, memory, peripherals, process management, scheduling and performance analysis modules along with the user interface.
 
 ---
+## Initial Development Plan
+
+| Week | Main Activities |
+|------|-----------------|
+| 1 | Team formation, repository setup, STC89C52 architecture study, programming language selection, and basic design |
+| 2 | Development of CPU model including registers, program counter, flags, and memory; begin instruction execution |
+| 3 | Implementation of stack operations, GPIO, timer, and interrupt simulation |
+| 4 | Design of process/PCB structure, ready queue, and context switching |
+| 5 | Implementation of scheduling algorithms such as FCFS, Round Robin, and Priority Scheduling |
+| 6 | Development of UI features such as Load, Run, Reset, and Step, followed by module integration |
+| 7 | Implementation of performance metrics including waiting time, turnaround time, response time, and CPU utilization |
+| 8 | Testing, documentation, bug fixing, final improvements, and project completion |
+
 
 📊 **Performance Analysis**
 
