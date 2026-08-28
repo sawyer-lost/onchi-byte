@@ -1,10 +1,10 @@
-# 🚀 Educational Microcontroller Simulator with Process Scheduling
+#  Educational Microcontroller Simulator with Process Scheduling
 
 «A simple educational simulator for the STC89C52 8-bit Microcontroller»
 
 ---
 
-📌 **About The Project**
+ **About The Project**
 
 This project is an educational simulator for the STC89C52 8-bit microcontroller.
 
@@ -18,13 +18,13 @@ The main aim of this project is to understand how a microcontroller execute inst
 
 ---
 
-🎯 **Problem Objective**
+ **Problem Objective**
 
 The main objective is to develop a simple software-based simulator that helps students understand the working of the STC89C52 along with basic process management and CPU scheduling concepts.
 
 ---
 
-🎯 **Problem Statement**
+ **Problem Statement**
 
 We are planning to develop a software based simulator for the STC89C52 microcontroller.
 
@@ -62,7 +62,7 @@ The project will cover:
 
 ---
 
-⚙️ **Microcontroller Being Simulated**
+ **Microcontroller Being Simulated**
 
 **STC89C52 – 8-bit 8051 compatible microcontroller**
 
@@ -70,7 +70,7 @@ The simulator will represent the main components required for educational purpos
 
 ---
 
-💻 **Selected Programming Language**
+ **Selected Programming Language**
 
 **Java**
 
@@ -78,7 +78,7 @@ Java is selected as the programming language for this project because it support
 
 ---
 
-🔧 **Planned Concepts**
+ **Planned Concepts**
 
 The simulator is planned to include:
 
@@ -97,7 +97,7 @@ The simulator is planned to include:
 
 ---
 
-🏗️ **Initial System Architecture**
+ **Initial System Architecture**
 
 The initial system architecture consists of different modules that work together to simulate the microcontroller, processes and CPU scheduling.
 
@@ -170,7 +170,7 @@ The project is planned to analyse:
 
 
 
-🌱 **Goal**
+ **Goal**
 
 The goal of this project is to make a simple simulator which helps students understand how the STC89C52 works and how multiple programs can be managed using CPU Scheduling.
 
@@ -178,7 +178,7 @@ The project will be developed step by step in the coming weeks.
 
 ---
 
-🚧 **Project Status**
+ **Project Status**
 
 **Currently in the Initial Development / Planning Stage.**
 
