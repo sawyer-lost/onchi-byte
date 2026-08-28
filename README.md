@@ -1,16 +1,16 @@
-🚀 Educational Microcontroller Simulator with Process Scheduling
+# 🚀 Educational Microcontroller Simulator with Process Scheduling
 
 «A simple educational simulator for the STC89C52 8-bit Microcontroller»
 
 ---
 
-📌 About The Project
+📌 **About The Project**
 
 This project is an educational simulator for the STC89C52 8-bit microcontroller.
 
 The main aim of this project is to understand how a microcontroller execute instructions, use memory and manage multiple programs.
 
-This project combines:
+**This project combines:**
 
 - Microprocessor Architecture
 - Data Structures
@@ -18,13 +18,13 @@ This project combines:
 
 ---
 
-🎯 Problem Objective
+🎯 **Problem Objective**
 
 The main objective is to develop a simple software-based simulator that helps students understand the working of the STC89C52 along with basic process management and CPU scheduling concepts.
 
 ---
 
-🎯 Problem Statement
+🎯 **Problem Statement**
 
 We are planning to develop a software based simulator for the STC89C52 microcontroller.
 
@@ -42,7 +42,7 @@ The project will also study Process Management and CPU Scheduling concepts.
 
 ---
 
-📦 Project Scope
+📦 **Project Scope**
 
 The project will cover:
 
@@ -62,23 +62,23 @@ The project will cover:
 
 ---
 
-⚙️ Microcontroller Being Simulated
+⚙️ **Microcontroller Being Simulated**
 
-STC89C52 – 8-bit 8051 compatible microcontroller
+**STC89C52 – 8-bit 8051 compatible microcontroller**
 
 The simulator will represent the main components required for educational purposes, rather than implementing the complete hardware of the microcontroller.
 
 ---
 
-💻 Selected Programming Language
+💻 **Selected Programming Language**
 
-Java
+**Java**
 
 Java is selected as the programming language for this project because it supports Object-Oriented Programming and provides suitable data structures for implementing the CPU, memory, processes, PCB, scheduling algorithms and user interface.
 
 ---
 
-🔧 Planned Concepts
+🔧 **Planned Concepts**
 
 The simulator is planned to include:
 
@@ -97,17 +97,17 @@ The simulator is planned to include:
 
 ---
 
-🏗️ Initial System Architecture
+🏗️ **Initial System Architecture**
 
 The initial system architecture consists of different modules that work together to simulate the microcontroller, processes and CPU scheduling.
 
-"Initial System Architecture" (images/architecture.png)
+![Initial System Architecture](images/architecture.png)
 
 The architecture includes the CPU, memory, peripherals, process management, scheduling and performance analysis modules along with the user interface.
 
 ---
 
-📊 Performance Analysis
+📊 **Performance Analysis**
 
 The project is planned to analyse:
 
@@ -119,7 +119,7 @@ The project is planned to analyse:
 
 ---
 
-👨‍💻 Developers
+👨‍💻 **Developers**
 
 <table>
 <tr><td align="center">
@@ -135,29 +135,29 @@ The project is planned to analyse:
 <img src="https://i.ibb.co/dsGYSZRZ/IMG-20260827-WA0035.jpg" width="100" height="100" style="border-radius:50%;"><br>
 <b>Hisham</b>
 </td></tr>
-</table>---
-
-👥 Team Responsibilities
-
-- Izhan: OS Scheduling & Simulator Planning
-- Keora: Data Structures & Process Management
-- Punarvi: Memory & Stack Study
-- Hisham: STC89C52 CPU / Architecture Study
-
-Secondary Responsibilities:
-
-- Izhan: UI Design
-- Keora: Testing Plan
-- Punarvi: Architecture Diagram
-- Hisham: GitHub & Project Integration
+</table>
 
 ---
 
-📅 Initial Development Plan
+👥 **Team Responsibilities**
 
-The project will be developed step by step:
+- **Izhan:** OS Scheduling & Simulator Planning
+- **Keora:** Data Structures & Process Management
+- **Punarvi:** Memory & Stack Study
+- **Hisham:** STC89C52 CPU / Architecture Study
 
-Week 1 – Planning & Research
+**Secondary Responsibilities:**
+
+- **Izhan:** UI Design
+- **Keora:** Testing Plan
+- **Punarvi:** Architecture Diagram
+- **Hisham:** GitHub & Project Integration
+
+---
+
+📅 **Initial Development Plan**
+
+### Week 1 – Planning & Research
 
 - Study STC89C52 architecture
 - Study CPU, memory and stack
@@ -165,18 +165,18 @@ Week 1 – Planning & Research
 - Finalize system architecture
 - Set up GitHub project
 
+---
 
+🌱 **Goal**
 
-🌱 Goal
-
-The goal of this project is to make a simple simulator which help students understand how the STC89C52 works and how multiple programs can be managed using CPU Scheduling.
+The goal of this project is to make a simple simulator which helps students understand how the STC89C52 works and how multiple programs can be managed using CPU Scheduling.
 
 The project will be developed step by step in the coming weeks.
 
 ---
 
-🚧 Project Status
+🚧 **Project Status**
 
-Currently in the Initial Development / Planning Stage.
+**Currently in the Initial Development / Planning Stage.**
 
 More features and implementation details will be added as development progresses.
