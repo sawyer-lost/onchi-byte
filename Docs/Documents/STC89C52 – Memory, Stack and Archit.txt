@@ -122,24 +122,8 @@ SP – Stack Pointer
 DPTR – Data Pointer
 PSW – Program Status Word
 Basic Architecture
-                 STC89C52
-                     |
-                    CPU
-                     |
-        +------------+------------+
-        |            |            |
-    Registers      Memory       I/O Ports
-                      |
-                 +----+----+
-                 |         |
-              Program     RAM
-              Memory       
-                           ↓
-                         Stack
-                           
-                           ↓
-                           SP
-
+   
+                          
 The CPU executes the instructions. Memory stores the program and data. The stack is used for temporary storage, and SP keeps track of the stack.
 
 Overall Summary
