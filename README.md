@@ -168,17 +168,7 @@ The project is planned to analyse:
 
 ---
 
-📅 **Initial Development Plan**
 
-### Week 1 – Planning & Research
-
-- Study STC89C52 architecture
-- Study CPU, memory and stack
-- Study process management and scheduling
-- Finalize system architecture
-- Set up GitHub project
-
----
 
 🌱 **Goal**
 
