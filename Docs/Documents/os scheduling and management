@@ -1,0 +1,20 @@
+STC89C52 Microcontroller Architecture Study 
+
+Abdul Rahman Izhan (25190102) 
+
+OS Scheduling & Context Switching  
+
+CPU & Register Organization I note that the 16‑bit Program Counter, known as PC tracks the address of the instruction to execute. The Accumulator, called ACC 
+and the B Register manage the arithmetic and logic operations. The Program Status Word, abbreviated PSW, stores flags and decides which register bank is active.
+CPU employs eight working registers R0 through R7 to hold data while running. 
+
+Memory Layout The chip contains 256 bytes of RAM. The lower 128 bytes hold the register banks and the system stack. The Special Function Registers, abbreviated 
+SFRs are mapped to memory addresses 0x80 through 0xFF to control hardware peripherals. The microcontroller provides 8 Kilobytes of Flash ROM for storing program 
+instructions. 
+
+Timers & Interrupt Mechanism the STC89C52 includes three 16‑bit timers: Timer 0 Timer 1 and Timer 2. For the OS simulator, Timer 0 or Timer 2 will act as the OS
+Tick generating a hardware at fixed interrupt intervals to trigger the process scheduler. When an interrupt occurs hardware automatically stops the task pushes
+PC onto the stack and redirects execution to the interrupt vector address. 
+
+Peripherals & Instructions Four 8‑bit GPIO ports P0, P1, P2 and P3 manage digital input and output signals. The simulators execution engine will need to decode
+and process instruction categories, including data transfers, arithmetic, logic operations and branching. 
