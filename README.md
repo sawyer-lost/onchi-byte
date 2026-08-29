@@ -42,7 +42,7 @@ The project will also study Process Management and CPU Scheduling concepts.
 
 ---
 
-📦 **Project Scope**
+ **Project Scope**
 
 The project will cover:
 
@@ -152,7 +152,7 @@ The project is planned to analyse:
 
 ---
 
-👥 **Team Responsibilities**
+ **Team Responsibilities**
 
 - **Izhan:** OS Scheduling & Simulator Planning
 - **Keora:** Data Structures & Process Management
