@@ -1,0 +1,40 @@
+Week-01 Status Report
+
+Planned Work:
+
+1. Create GitHub repo and README.
+2. Study STC89C52 CPU and architecture.
+3. Select Java for the simulator.
+4. Design basic simulator structure.
+
+Completed Work:
+
+1. GitHub repo and Week-1 branch created.
+2. README.md and .gitignore added.
+3. Java selected for development.
+4. STC89C52 CPU was studied.
+5. Basic simulator architecture was designed.
+6. Team works was divided.
+
+Pending Work:
+no pending workds for 1st weak
+
+Issues:
+
+1. How to represent CPU registers and memory?
+2. How to simulate stack and GPIO?
+3. How to manage multiple processes?
+
+Individual Work:
+
+- Izhan: OS scheduling and simulator planning.
+- Keora: Data structures and process management.
+- Punarvi: Memory and stack study.
+- Hisham: STC89C52 CPU study and GitHub integration.
+
+Carried Forward:
+
+1. Start simulator implementation.
+2. Implement CPU, memory and GPIO.
+3. Start instruction execution.
+4. Continue process management and scheduling.
