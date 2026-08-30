@@ -58,6 +58,13 @@ function parseValue(value) {
         );
     }
 
+    // Values containing A-F are hexadecimal
+    if (/^[0-9A-Fa-f]+$/.test(value) &&
+        /[A-Fa-f]/.test(value)) {
+
+        return parseInt(value, 16);
+    }
+
     return parseInt(value, 10);
 }
 
@@ -294,11 +301,8 @@ function executeADD(operand) {
         return;
     }
 
-    const valueText =
-        operand.substring(3).trim();
-
     const value =
-        parseValue(valueText);
+        parseValue(operand.substring(3).trim());
 
     const result =
         A + value;
@@ -322,11 +326,8 @@ function executeSUBB(operand) {
         return;
     }
 
-    const valueText =
-        operand.substring(3).trim();
-
     const value =
-        parseValue(valueText);
+        parseValue(operand.substring(3).trim());
 
     const borrow =
         carryFlag ? 1 : 0;
@@ -353,11 +354,8 @@ function executeANL(operand) {
         return;
     }
 
-    const valueText =
-        operand.substring(3).trim();
-
     const value =
-        parseValue(valueText);
+        parseValue(operand.substring(3).trim());
 
     A =
         A & value;
