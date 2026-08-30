@@ -74,6 +74,7 @@ function loadProgram() {
 
     A = 0;
     B = 0;
+
     registers = [0, 0, 0, 0, 0, 0, 0, 0];
 
     PC = 0;
@@ -229,8 +230,10 @@ function executeInstruction(instruction) {
             break;
 
         default:
+
             document.getElementById("status").textContent =
                 "Unsupported instruction: " + name;
+
             running = false;
     }
 }
@@ -285,14 +288,17 @@ function executeMOV(operand) {
 function executeADD(operand) {
 
     const upperOperand =
-        operand.toUpperCase();
+        operand.toUpperCase().trim();
 
     if (!upperOperand.startsWith("A,#")) {
         return;
     }
 
+    const valueText =
+        operand.substring(3).trim();
+
     const value =
-        parseValue(operand.substring(3));
+        parseValue(valueText);
 
     const result =
         A + value;
@@ -310,14 +316,17 @@ function executeADD(operand) {
 function executeSUBB(operand) {
 
     const upperOperand =
-        operand.toUpperCase();
+        operand.toUpperCase().trim();
 
     if (!upperOperand.startsWith("A,#")) {
         return;
     }
 
+    const valueText =
+        operand.substring(3).trim();
+
     const value =
-        parseValue(operand.substring(3));
+        parseValue(valueText);
 
     const borrow =
         carryFlag ? 1 : 0;
@@ -338,14 +347,17 @@ function executeSUBB(operand) {
 function executeANL(operand) {
 
     const upperOperand =
-        operand.toUpperCase();
+        operand.toUpperCase().trim();
 
     if (!upperOperand.startsWith("A,#")) {
         return;
     }
 
+    const valueText =
+        operand.substring(3).trim();
+
     const value =
-        parseValue(operand.substring(3));
+        parseValue(valueText);
 
     A =
         A & value;
