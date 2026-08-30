@@ -36,13 +36,25 @@ function updateZeroFlag() {
 
 
 function parseValue(value) {
+
     value = value.trim();
 
-    if (value.startsWith("0x") || value.startsWith("0X")) {
-        return parseInt(value.substring(2), 16);
+    if (value.startsWith("#")) {
+        value = value.substring(1);
     }
 
-    if (value.endsWith("H") || value.endsWith("h")) {
+    if (value.startsWith("0x") ||
+        value.startsWith("0X")) {
+
+        return parseInt(
+            value.substring(2),
+            16
+        );
+    }
+
+    if (value.endsWith("H") ||
+        value.endsWith("h")) {
+
         return parseInt(
             value.substring(0, value.length - 1),
             16
@@ -55,7 +67,8 @@ function parseValue(value) {
 
 function loadProgram() {
 
-    const input = document.getElementById("programInput");
+    const input =
+        document.getElementById("programInput");
 
     program = input.value
         .split(/\r?\n/)
@@ -64,6 +77,7 @@ function loadProgram() {
 
     A = 0;
     B = 0;
+
     registers = [0, 0, 0, 0, 0, 0, 0, 0];
 
     PC = 0;
@@ -90,6 +104,7 @@ function resetSimulator() {
 
     A = 0;
     B = 0;
+
     registers = [0, 0, 0, 0, 0, 0, 0, 0];
 
     PC = 0;
@@ -126,7 +141,9 @@ function displayProgram() {
 
         line.className = "program-line";
 
-        if (index === PC && PC < program.length) {
+        if (index === PC &&
+            PC < program.length) {
+
             line.classList.add("current");
         }
 
@@ -146,7 +163,8 @@ function fetchInstruction() {
         return null;
     }
 
-    currentInstruction = program[PC];
+    currentInstruction =
+        program[PC];
 
     PC++;
 
@@ -210,10 +228,13 @@ function executeInstruction(instruction) {
             break;
 
         case "END":
+
             running = false;
+
             break;
 
         default:
+
             document.getElementById("status").textContent =
                 "Unsupported instruction: " + name;
     }
@@ -222,7 +243,8 @@ function executeInstruction(instruction) {
 
 function executeMOV(operand) {
 
-    const parts = operand.split(",");
+    const parts =
+        operand.split(",");
 
     if (parts.length !== 2) {
         return;
@@ -239,7 +261,7 @@ function executeMOV(operand) {
     }
 
     const value =
-        parseValue(source.substring(1)) & 0xFF;
+        parseValue(source) & 0xFF;
 
     if (destination === "A") {
 
@@ -253,9 +275,13 @@ function executeMOV(operand) {
     } else if (destination.startsWith("R")) {
 
         const index =
-            parseInt(destination.substring(1), 10);
+            parseInt(
+                destination.substring(1),
+                10
+            );
 
         if (index >= 0 && index <= 7) {
+
             registers[index] = value;
         }
     }
@@ -272,14 +298,18 @@ function executeADD(operand) {
     }
 
     const value =
-        parseValue(operand.substring(2));
+        parseValue(
+            operand.substring(3)
+        );
 
     const result =
         A + value;
 
-    carryFlag = result > 255;
+    carryFlag =
+        result > 255;
 
-    A = result & 0xFF;
+    A =
+        result & 0xFF;
 
     updateZeroFlag();
 }
@@ -295,7 +325,9 @@ function executeSUBB(operand) {
     }
 
     const value =
-        parseValue(operand.substring(2));
+        parseValue(
+            operand.substring(3)
+        );
 
     const borrow =
         carryFlag ? 1 : 0;
@@ -303,9 +335,11 @@ function executeSUBB(operand) {
     const result =
         A - value - borrow;
 
-    carryFlag = result < 0;
+    carryFlag =
+        result < 0;
 
-    A = result & 0xFF;
+    A =
+        result & 0xFF;
 
     updateZeroFlag();
 }
@@ -321,9 +355,12 @@ function executeANL(operand) {
     }
 
     const value =
-        parseValue(operand.substring(2));
+        parseValue(
+            operand.substring(3)
+        );
 
-    A = A & value;
+    A =
+        A & value;
 
     updateZeroFlag();
 }
@@ -336,14 +373,18 @@ function executeINC(operand) {
 
     if (target === "A") {
 
-        A = (A + 1) & 0xFF;
+        A =
+            (A + 1) & 0xFF;
 
         updateZeroFlag();
 
     } else if (target.startsWith("R")) {
 
         const index =
-            parseInt(target.substring(1), 10);
+            parseInt(
+                target.substring(1),
+                10
+            );
 
         if (index >= 0 && index <= 7) {
 
@@ -359,7 +400,8 @@ function executeSJMP(operand) {
     const offset =
         parseValue(operand);
 
-    PC = PC + offset;
+    PC =
+        PC + offset;
 
     if (PC < 0) {
         PC = 0;
@@ -385,6 +427,7 @@ function executeCLR(operand) {
 function step() {
 
     if (program.length === 0) {
+
         loadProgram();
     }
 
@@ -469,7 +512,8 @@ function runProgram() {
 
     let safetyCounter = 0;
 
-    while (running && PC < program.length) {
+    while (running &&
+           PC < program.length) {
 
         step();
 
