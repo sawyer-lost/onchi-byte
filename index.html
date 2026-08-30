@@ -153,6 +153,161 @@
 
     <div class="grid">
 
+        <div class="card">
+
+            <h2>Program</h2>
+
+            <textarea id="programInput">MOV A,#05
+MOV R0,#03
+ADD A,#03
+INC A
+ANL A,#0F
+SUBB A,#02
+END</textarea>
+
+            <div class="buttons">
+                <button onclick="loadProgram()">LOAD</button>
+                <button onclick="resetSimulator()">RESET</button>
+                <button onclick="step()">STEP</button>
+                <button onclick="runProgram()">RUN</button>
+            </div>
+
+            <div id="programDisplay" class="program-list"></div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>CPU State</h2>
+
+            <div class="state">
+
+                <div class="register">
+                    A : <span id="A">00</span>
+                </div>
+
+                <div class="register">
+                    B : <span id="B">00</span>
+                </div>
+
+                <div class="register">
+                    R0 : <span id="R0">00</span>
+                </div>
+
+                <div class="register">
+                    R1 : <span id="R1">00</span>
+                </div>
+
+                <div class="register">
+                    R2 : <span id="R2">00</span>
+                </div>
+
+                <div class="register">
+                    R3 : <span id="R3">00</span>
+                </div>
+
+                <div class="register">
+                    R4 : <span id="R4">00</span>
+                </div>
+
+                <div class="register">
+                    R5 : <span id="R5">00</span>
+                </div>
+
+                <div class="register">
+                    R6 : <span id="R6">00</span>
+                </div>
+
+                <div class="register">
+                    R7 : <span id="R7">00</span>
+                </div>
+
+                <div class="register">
+                    PC : <span id="PC">0000</span>
+                </div>
+
+                <div class="register">
+                    SP : <span id="SP">07</span>
+                </div>
+
+                <div class="register">
+                    CY : <span id="CY">0</span>
+                </div>
+
+                <div class="register">
+                    Z : <span id="Z">0</span>
+                </div>
+
+            </div>
+
+            <div class="status">
+                Status:
+                <strong id="status">Ready</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+
+        <h2>Execution Trace</h2>
+
+        <div id="trace" class="trace">
+            Waiting for execution...
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background: #f3f4f6;
+        }
+
+        .program-list {
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        .program-line {
+            padding: 5px;
+        }
+
+        .current {
+            font-weight: bold;
+            background: #e5e7eb;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>ONCHI-BYTE</h1>
+    <p>STC89C52 Microcontroller Simulator</p>
+</header>
+
+<div class="container">
+
+    <div class="grid">
+
         <!-- PROGRAM -->
         <div class="card">
 
