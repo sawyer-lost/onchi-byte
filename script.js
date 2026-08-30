@@ -14,11 +14,56 @@ let currentInstruction = null;
 let running = false;
 
 
-function resetCPU() {
+function formatByte(value) {
+    return (value & 0xFF)
+        .toString(16)
+        .toUpperCase()
+        .padStart(2, "0");
+}
+
+
+function formatWord(value) {
+    return (value & 0xFFFF)
+        .toString(16)
+        .toUpperCase()
+        .padStart(4, "0");
+}
+
+
+function updateZeroFlag() {
+    zeroFlag = A === 0;
+}
+
+
+function parseValue(value) {
+    value = value.trim();
+
+    if (value.startsWith("0x") || value.startsWith("0X")) {
+        return parseInt(value.substring(2), 16);
+    }
+
+    if (value.endsWith("H") || value.endsWith("h")) {
+        return parseInt(
+            value.substring(0, value.length - 1),
+            16
+        );
+    }
+
+    return parseInt(value, 10);
+}
+
+
+function loadProgram() {
+
+    const input = document.getElementById("programInput");
+
+    program = input.value
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
 
     A = 0;
     B = 0;
-
     registers = [0, 0, 0, 0, 0, 0, 0, 0];
 
     PC = 0;
@@ -28,26 +73,41 @@ function resetCPU() {
     zeroFlag = false;
 
     currentInstruction = null;
-
-    updateDisplay();
-}
-
-
-function loadProgram() {
-
-    const text =
-        document.getElementById("programInput").value;
-
-    program = text
-        .split("\n")
-        .map(line => line.trim())
-        .filter(line => line.length > 0);
-
-    resetCPU();
+    running = false;
 
     document.getElementById("status").textContent =
         "Program loaded";
 
+    document.getElementById("trace").textContent =
+        "Program loaded. Press STEP to execute.";
+
+    updateDisplay();
+    displayProgram();
+}
+
+
+function resetSimulator() {
+
+    A = 0;
+    B = 0;
+    registers = [0, 0, 0, 0, 0, 0, 0, 0];
+
+    PC = 0;
+    SP = 7;
+
+    carryFlag = false;
+    zeroFlag = false;
+
+    currentInstruction = null;
+    running = false;
+
+    document.getElementById("status").textContent =
+        "Ready";
+
+    document.getElementById("trace").textContent =
+        "Waiting for execution...";
+
+    updateDisplay();
     displayProgram();
 }
 
@@ -59,33 +119,30 @@ function displayProgram() {
 
     display.innerHTML = "";
 
-    for (let i = 0; i < program.length; i++) {
+    program.forEach((instruction, index) => {
 
         const line =
             document.createElement("div");
 
         line.className = "program-line";
 
-        if (i === PC) {
+        if (index === PC && PC < program.length) {
             line.classList.add("current");
         }
 
         line.textContent =
-            i.toString().padStart(2, "0") +
+            index.toString().padStart(2, "0") +
             "  " +
-            program[i];
+            instruction;
 
         display.appendChild(line);
-    }
+    });
 }
 
 
 function fetchInstruction() {
 
     if (PC >= program.length) {
-
-        currentInstruction = null;
-
         return null;
     }
 
@@ -105,11 +162,10 @@ function decodeInstruction(instruction) {
     const name =
         parts[0].toUpperCase();
 
-    let operand = "";
-
-    if (parts.length > 1) {
-        operand = parts.slice(1).join(" ");
-    }
+    const operand =
+        parts.length > 1
+            ? parts.slice(1).join(" ")
+            : "";
 
     return {
         name: name,
@@ -118,10 +174,10 @@ function decodeInstruction(instruction) {
 }
 
 
-function executeInstruction(decoded) {
+function executeInstruction(instruction) {
 
-    const name = decoded.name;
-    const operand = decoded.operand;
+    const name = instruction.name;
+    const operand = instruction.operand;
 
     switch (name) {
 
@@ -154,16 +210,10 @@ function executeInstruction(decoded) {
             break;
 
         case "END":
-
             running = false;
-
-            document.getElementById("status").textContent =
-                "Program terminated";
-
             break;
 
         default:
-
             document.getElementById("status").textContent =
                 "Unsupported instruction: " + name;
     }
@@ -172,8 +222,7 @@ function executeInstruction(decoded) {
 
 function executeMOV(operand) {
 
-    const parts =
-        operand.split(",");
+    const parts = operand.split(",");
 
     if (parts.length !== 2) {
         return;
@@ -190,17 +239,21 @@ function executeMOV(operand) {
     }
 
     const value =
-        parseValue(source.substring(1));
+        parseValue(source.substring(1)) & 0xFF;
 
     if (destination === "A") {
 
         A = value;
         updateZeroFlag();
 
+    } else if (destination === "B") {
+
+        B = value;
+
     } else if (destination.startsWith("R")) {
 
         const index =
-            parseInt(destination.substring(1));
+            parseInt(destination.substring(1), 10);
 
         if (index >= 0 && index <= 7) {
             registers[index] = value;
@@ -211,7 +264,10 @@ function executeMOV(operand) {
 
 function executeADD(operand) {
 
-    if (!operand.toUpperCase().startsWith("A,#")) {
+    const upperOperand =
+        operand.toUpperCase();
+
+    if (!upperOperand.startsWith("A,#")) {
         return;
     }
 
@@ -231,7 +287,10 @@ function executeADD(operand) {
 
 function executeSUBB(operand) {
 
-    if (!operand.toUpperCase().startsWith("A,#")) {
+    const upperOperand =
+        operand.toUpperCase();
+
+    if (!upperOperand.startsWith("A,#")) {
         return;
     }
 
@@ -254,7 +313,10 @@ function executeSUBB(operand) {
 
 function executeANL(operand) {
 
-    if (!operand.toUpperCase().startsWith("A,#")) {
+    const upperOperand =
+        operand.toUpperCase();
+
+    if (!upperOperand.startsWith("A,#")) {
         return;
     }
 
@@ -269,21 +331,19 @@ function executeANL(operand) {
 
 function executeINC(operand) {
 
-    if (operand.toUpperCase() === "A") {
+    const target =
+        operand.trim().toUpperCase();
+
+    if (target === "A") {
 
         A = (A + 1) & 0xFF;
 
         updateZeroFlag();
 
-        return;
-    }
-
-    if (operand.toUpperCase().startsWith("R")) {
+    } else if (target.startsWith("R")) {
 
         const index =
-            parseInt(
-                operand.substring(1)
-            );
+            parseInt(target.substring(1), 10);
 
         if (index >= 0 && index <= 7) {
 
@@ -313,7 +373,7 @@ function executeSJMP(operand) {
 
 function executeCLR(operand) {
 
-    if (operand.toUpperCase() === "A") {
+    if (operand.trim().toUpperCase() === "A") {
 
         A = 0;
 
@@ -322,45 +382,9 @@ function executeCLR(operand) {
 }
 
 
-function parseValue(value) {
-
-    value = value.trim();
-
-    if (value.startsWith("0x")
-        || value.startsWith("0X")) {
-
-        return parseInt(
-            value.substring(2),
-            16
-        );
-    }
-
-    if (value.endsWith("H")
-        || value.endsWith("h")) {
-
-        return parseInt(
-            value.substring(
-                0,
-                value.length - 1
-            ),
-            16
-        );
-    }
-
-    return parseInt(value);
-}
-
-
-function updateZeroFlag() {
-
-    zeroFlag = A === 0;
-}
-
-
 function step() {
 
     if (program.length === 0) {
-
         loadProgram();
     }
 
@@ -375,13 +399,20 @@ function step() {
     const oldA = A;
     const oldPC = PC;
 
-    let trace =
-        "Instruction : " +
-        program[PC] +
-        "\n\n";
+    const instructionText =
+        program[PC];
 
     const instruction =
         fetchInstruction();
+
+    if (instruction === null) {
+        return;
+    }
+
+    let trace =
+        "Instruction : " +
+        instructionText +
+        "\n\n";
 
     trace += "FETCH ✓\n";
 
@@ -410,7 +441,14 @@ function step() {
     document.getElementById("trace").textContent =
         trace;
 
-    if (decoded.name !== "END") {
+    if (decoded.name === "END") {
+
+        running = false;
+
+        document.getElementById("status").textContent =
+            "Program terminated";
+
+    } else {
 
         document.getElementById("status").textContent =
             "Running";
@@ -429,31 +467,22 @@ function runProgram() {
 
     running = true;
 
+    let safetyCounter = 0;
+
     while (running && PC < program.length) {
 
         step();
 
-        if (program[PC - 1]
-            && program[PC - 1]
-                .toUpperCase() === "END") {
+        safetyCounter++;
+
+        if (safetyCounter >= 1000) {
 
             running = false;
+
+            document.getElementById("status").textContent =
+                "Stopped: execution limit reached";
         }
     }
-}
-
-
-function resetSimulator() {
-
-    resetCPU();
-
-    document.getElementById("status").textContent =
-        "Ready";
-
-    document.getElementById("trace").textContent =
-        "Waiting for execution...";
-
-    displayProgram();
 }
 
 
@@ -482,24 +511,6 @@ function updateDisplay() {
 
     document.getElementById("Z").textContent =
         zeroFlag ? "1" : "0";
-}
-
-
-function formatByte(value) {
-
-    return value
-        .toString(16)
-        .toUpperCase()
-        .padStart(2, "0");
-}
-
-
-function formatWord(value) {
-
-    return value
-        .toString(16)
-        .toUpperCase()
-        .padStart(4, "0");
 }
 
 
