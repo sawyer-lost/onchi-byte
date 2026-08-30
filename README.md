@@ -1,120 +1,629 @@
-#  Educational Microcontroller Simulator with Process Scheduling
+<!DOCTYPE html>
+<html lang="en">
 
-«A simple educational simulator for the STC89C52 8-bit Microcontroller»
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
----
+    <title>ONCHI-BYTE | STC89C52 Simulator</title>
 
- **About The Project**
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-This project is an educational simulator for the STC89C52 8-bit microcontroller.
+        :root {
+            --bg: #080b12;
+            --card: #101622;
+            --card2: #141b29;
+            --border: #263247;
+            --text: #f4f7fb;
+            --muted: #8995aa;
+            --accent: #6d7cff;
+            --accent2: #00d9ff;
+            --green: #36e59a;
+            --danger: #ff5c7a;
+        }
 
-The main aim of this project is to understand how a microcontroller execute instructions, use memory and manage multiple programs.
+        body {
+            min-height: 100vh;
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(109, 124, 255, 0.14), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(0, 217, 255, 0.10), transparent 28%),
+                var(--bg);
+            color: var(--text);
+        }
 
-**This project combines:**
+        header {
+            padding: 32px 20px 26px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 11, 18, 0.85);
+        }
 
-- Microprocessor Architecture
-- Data Structures
-- Operating Systems
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
 
----
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white;
+            box-shadow: 0 0 25px rgba(109, 124, 255, 0.35);
+        }
 
- **Problem Objective**
+        header p {
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-The main objective is to develop a simple software-based simulator that helps students understand the working of the STC89C52 along with basic process management and CPU scheduling concepts.
+        .badge {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: bold;
+        }
 
----
+        .container {
+            width: min(1250px, 94%);
+            margin: 28px auto 50px;
+        }
 
- **Problem Statement**
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
 
-We are planning to develop a software based simulator for the STC89C52 microcontroller.
+        .section-title span {
+            color: var(--accent2);
+        }
 
-The simulator will focus on basic processor components like:
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 18px;
+        }
 
-- CPU & Registers
-- Program Counter (PC)
-- Flags
-- Program Memory
-- Data Memory
-- Stack
-- Instruction Execution
+        .card {
+            background: linear-gradient(145deg, var(--card), var(--card2));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+        }
 
-The project will also study Process Management and CPU Scheduling concepts.
+        textarea {
+            width: 100%;
+            height: 300px;
+            resize: vertical;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            padding: 16px;
+            background: #080c14;
+            color: #dce5f5;
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.7;
+        }
 
----
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(109, 124, 255, 0.12);
+        }
 
- **Project Scope**
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 9px;
+            margin-top: 14px;
+        }
 
-The project will cover:
+        button {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 8px;
+            cursor: pointer;
+            color: white;
+            background: #182131;
+            font-weight: 800;
+            transition: 0.2s;
+        }
 
-- CPU and Register operations
-- Program and Data Memory
-- Stack operations
-- Instruction Execution
-- GPIO, Timer and Interrupts
-- Process Management
-- Process Control Block (PCB)
-- Ready Queue
-- Context Switching
-- FCFS Scheduling
-- Round Robin Scheduling
-- Priority Scheduling
-- Performance Analysis
+        button:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            background: #202b40;
+        }
 
----
+        #loadButton,
+        #runButton {
+            background: linear-gradient(135deg, #5968ee, #697bff);
+            border: none;
+        }
 
- **Microcontroller Being Simulated**
+        #resetButton {
+            background: #251d2a;
+        }
 
-**STC89C52 – 8-bit 8051 compatible microcontroller**
+        .program-list {
+            margin-top: 15px;
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 6px;
+            background: #080c14;
+        }
 
-The simulator will represent the main components required for educational purposes, rather than implementing the complete hardware of the microcontroller.
+        .program-line {
+            padding: 8px 10px;
+            border-radius: 7px;
+            color: #8491a8;
+            font-family: monospace;
+            font-size: 13px;
+        }
 
----
+        .current {
+            background: rgba(109, 124, 255, 0.18);
+            color: white;
+            border-left: 3px solid var(--accent2);
+        }
 
- **Selected Programming Language**
+        .register-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 9px;
+        }
 
-**Java**
+        .register {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(8, 12, 20, 0.7);
+        }
 
-Java is selected as the programming language for this project because it supports Object-Oriented Programming and provides suitable data structures for implementing the CPU, memory, processes, PCB, scheduling algorithms and user interface.
+        .register-name {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: bold;
+        }
 
----
+        .register-value {
+            color: var(--accent2);
+            font-family: monospace;
+            font-size: 17px;
+            font-weight: bold;
+        }
 
- **Planned Concepts**
+        .status-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding: 13px 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #080c14;
+        }
 
-The simulator is planned to include:
+        .status-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
 
-- Instruction Execution
-- Memory & Stack
-- GPIO
-- Timer
-- Interrupts
-- Process Management
-- Process Control Block (PCB)
-- Ready Queue
-- Context Switching
-- FCFS Scheduling
-- Round Robin Scheduling
-- Priority Scheduling
+        #status {
+            color: var(--green);
+            font-weight: bold;
+        }
 
----
+        .trace-card {
+            margin-top: 18px;
+        }
 
- **Initial System Architecture**
+        .trace {
+            min-height: 190px;
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #05080e;
+            color: #cbd5e6;
+            white-space: pre-line;
+            font-family: "Courier New", monospace;
+            line-height: 1.7;
+            overflow-x: auto;
+        }
 
-The initial system architecture consists of different modules that work together to simulate the microcontroller, processes and CPU scheduling.
+        .trace-title {
+            color: var(--accent2);
+            margin-bottom: 12px;
+        }
 
-![Initial System Architecture](images/architecture.png)
+        .developers {
+            margin-top: 28px;
+        }
 
-The architecture includes the CPU, memory, peripherals, process management, scheduling and performance analysis modules along with the user interface.
+        .developer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
 
----
-## Initial Development Plan
+        .developer {
+            text-align: center;
+            padding: 20px 12px;
+            background: linear-gradient(145deg, var(--card), var(--card2));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: 0.25s;
+        }
 
-| Week | Main Activities |
-|------|-----------------|
-| 1 | Team formation, repository setup, STC89C52 architecture study, programming language selection, and basic design |
-| 2 | Development of CPU model including registers, program counter, flags, and memory; begin instruction execution |
-| 3 | Implementation of stack operations, GPIO, timer, and interrupt simulation |
-| 4 | Design of process/PCB structure, ready queue, and context switching |
-| 5 | Implementation of scheduling algorithms such as FCFS, Round Robin, and Priority Scheduling |
+        .developer:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 30px rgba(109, 124, 255, 0.15);
+        }
+
+        .developer img {
+            width: 92px;
+            height: 92px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #27334a;
+            margin-bottom: 12px;
+        }
+
+        .developer h3 {
+            font-size: 15px;
+        }
+
+        .developer p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #657187;
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 850px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .developer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .developer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <div class="logo-icon">⚡</div>
+        ONCHI-BYTE
+    </div>
+
+    <p>STC89C52 Microcontroller Simulator</p>
+
+    <div class="badge">
+        ● SIMULATOR ONLINE
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <div class="main-grid">
+
+        <!-- PROGRAM PANEL -->
+
+        <div class="card">
+
+            <div class="section-title">
+                <span>▸</span>
+                Program Editor
+            </div>
+
+            <textarea id="programInput">MOV A,#05
+MOV R0,#03
+ADD A,#03
+INC A
+ANL A,#0F
+SUBB A,#02
+END</textarea>
+
+            <div class="buttons">
+
+                <button id="loadButton">
+                    LOAD
+                </button>
+
+                <button id="resetButton">
+                    RESET
+                </button>
+
+                <button id="stepButton">
+                    STEP
+                </button>
+
+                <button id="runButton">
+                    ▶ RUN
+                </button>
+
+            </div>
+
+            <div id="programDisplay"
+                 class="program-list">
+            </div>
+
+        </div>
+
+
+        <!-- CPU PANEL -->
+
+        <div class="card">
+
+            <div class="section-title">
+                <span>▣</span>
+                CPU State
+            </div>
+
+            <div class="register-grid">
+
+                <div class="register">
+                    <span class="register-name">ACCUMULATOR A</span>
+                    <span id="A" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">REGISTER B</span>
+                    <span id="B" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R0</span>
+                    <span id="R0" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R1</span>
+                    <span id="R1" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R2</span>
+                    <span id="R2" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R3</span>
+                    <span id="R3" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R4</span>
+                    <span id="R4" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R5</span>
+                    <span id="R5" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R6</span>
+                    <span id="R6" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">R7</span>
+                    <span id="R7" class="register-value">00</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">PROGRAM COUNTER</span>
+                    <span id="PC" class="register-value">0000</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">STACK POINTER</span>
+                    <span id="SP" class="register-value">07</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">CARRY FLAG</span>
+                    <span id="CY" class="register-value">0</span>
+                </div>
+
+                <div class="register">
+                    <span class="register-name">ZERO FLAG</span>
+                    <span id="Z" class="register-value">0</span>
+                </div>
+
+            </div>
+
+            <div class="status-box">
+                <span class="status-label">
+                    SYSTEM STATUS
+                </span>
+
+                <span id="status">
+                    Ready
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- EXECUTION TRACE -->
+
+    <div class="card trace-card">
+
+        <div class="section-title">
+            <span>⌁</span>
+            Execution Trace
+        </div>
+
+        <div class="trace-title">
+            FETCH → DECODE → EXECUTE
+        </div>
+
+        <div id="trace" class="trace">
+            Waiting for execution...
+        </div>
+
+    </div>
+
+
+    <!-- DEVELOPERS -->
+
+    <div class="developers">
+
+        <div class="section-title">
+            <span>◆</span>
+            Developers
+        </div>
+
+        <div class="developer-grid">
+
+            <div class="developer">
+
+                <img
+                    src="https://i.ibb.co/7tGmjPcg/25190102.jpg"
+                    alt="Izhan">
+
+                <h3>Izhan</h3>
+
+                <p>Developer</p>
+
+            </div>
+
+
+            <div class="developer">
+
+                <img
+                    src="https://i.ibb.co/2YKbKkbc/IMG-20260826-132910-376.jpg"
+                    alt="Keora">
+
+                <h3>Keora</h3>
+
+                <p>Developer</p>
+
+            </div>
+
+
+            <div class="developer">
+
+                <img
+                    src="https://i.ibb.co/jv8ZQ5qZ/IMG-20260826-132908-942.jpg"
+                    alt="Punarvi">
+
+                <h3>Punarvi</h3>
+
+                <p>Developer</p>
+
+            </div>
+
+
+            <div class="developer">
+
+                <img
+                    src="https://i.ibb.co/dsGYSZRZ/IMG-20260827-WA0035.jpg"
+                    alt="Hisham">
+
+                <h3>Hisham</h3>
+
+                <p>Developer</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+    ONCHI-BYTE • STC89C52 Microcontroller Simulator
+</footer>
+
+
+<script src="./script.js"></script>
+
+
+<script>
+
+    document
+        .getElementById("loadButton")
+        .addEventListener("click", loadProgram);
+
+    document
+        .getElementById("resetButton")
+        .addEventListener("click", resetSimulator);
+
+    document
+        .getElementById("stepButton")
+        .addEventListener("click", step);
+
+    document
+        .getElementById("runButton")
+        .addEventListener("click", runProgram);
+
+</script>
+
+</body>
+
+</html>| 5 | Implementation of scheduling algorithms such as FCFS, Round Robin, and Priority Scheduling |
 | 6 | Development of UI features such as Load, Run, Reset, and Step, followed by module integration |
 | 7 | Implementation of performance metrics including waiting time, turnaround time, response time, and CPU utilization |
 | 8 | Testing, documentation, bug fixing, final improvements, and project completion |
