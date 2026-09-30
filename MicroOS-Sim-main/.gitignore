@@ -1,0 +1,30 @@
+# --- Java Build & Class Files ---
+*.class
+*.jar
+*.war
+*.ear
+bin/
+target/
+build/
+*.out
+
+# --- IDE Files (VS Code, IntelliJ, Eclipse) ---
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+
+# --- OS-Specific Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Temporary & Log Files ---
+*.log
+*.tmp
+*.bak
+*.swp
