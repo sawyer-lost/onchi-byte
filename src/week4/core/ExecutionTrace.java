@@ -1,3 +1,5 @@
+package week4.core;
+
 public class ExecutionTrace {
 
     private StringBuilder trace;

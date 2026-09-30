@@ -1,3 +1,5 @@
+package week4.core;
+
 public class CPU {
 
     // Main registers

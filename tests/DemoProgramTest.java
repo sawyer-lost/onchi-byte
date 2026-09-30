@@ -7,10 +7,14 @@ public class DemoProgramTest {
         String[] program = {
             "MOV A,#05",
             "MOV R0,#03",
+            "XCH A,R0",
             "ADD A,#03",
             "INC A",
+            "DEC A",
             "ANL A,#0F",
-            "SUBB A,#02",
+            "ORL A,#01",
+            "SJMP 1",
+            "CLR A",
             "END"
         };
 
@@ -22,28 +26,20 @@ public class DemoProgramTest {
 
         System.out.println("DEMO PROGRAM TEST");
         System.out.println("=================");
-
-        System.out.println("Final A  : "
-                + String.format("%02X", finalA));
-
-        System.out.println("Final R0 : "
-                + String.format("%02X", finalR0));
-
-        System.out.println("Status   : "
-                + simulator.getExecutionStatus());
-
+        System.out.println("Final A  : " + String.format("%02X", finalA));
+        System.out.println("Final R0 : " + String.format("%02X", finalR0));
+        System.out.println("Final PC : " + String.format("%04X", simulator.getCPU().getPC()));
+        System.out.println("Status   : " + simulator.getExecutionStatus());
         System.out.println();
 
-        if (finalA == 6
-                && finalR0 == 3
-                && simulator.getExecutionStatus()
-                    .equals("Program terminated")) {
+        if (finalA == 7
+                && finalR0 == 5
+                && simulator.getExecutionStatus().equals("Program terminated")) {
 
             System.out.println("DEMO TEST : PASS");
-
         } else {
-
             System.out.println("DEMO TEST : FAIL");
+            System.exit(1);
         }
     }
 }
