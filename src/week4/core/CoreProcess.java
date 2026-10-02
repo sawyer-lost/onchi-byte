@@ -1,73 +1,382 @@
 package week4.core;
 
-import java.io.*;
+import week4.ipc.FifoConfig;
+import week4.ipc.FifoUtil;
 
-/** Week 4 Core Process: the real Week 3 simulator running behind FIFO IPC. */
-public class CoreProcess {
-    public static final String UI_TO_CORE = "/tmp/microos_ui_to_core.fifo";
-    public static final String CORE_TO_UI = "/tmp/microos_core_to_ui.fifo";
-    public static final String CORE_TO_LOG = "/tmp/microos_core_to_log.fifo";
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-    public static void main(String[] args) throws Exception {
-        Simulator simulator = new Simulator();
-        try (BufferedReader in = new BufferedReader(new FileReader(UI_TO_CORE));
-             PrintWriter uiOut = new PrintWriter(new FileWriter(CORE_TO_UI), true);
-             PrintWriter logOut = new PrintWriter(new FileWriter(CORE_TO_LOG), true)) {
-            uiOut.println("CORE_READY");
-            logOut.println("INFO|Core process started");
-            String command;
-            while ((command = in.readLine()) != null) {
-                if ("EXIT".equals(command)) break;
-                String response = handle(command, simulator, logOut);
-                uiOut.println(response.replace('\n', '|'));
+public final class CoreProcess {
+    private final ReflectionSimulator simulator;
+    private BufferedWriter uiWriter;
+    private final BlockingQueue<String> logQueue = new LinkedBlockingQueue<>();
+    private volatile boolean logSenderRunning = true;
+    private Thread logSenderThread;
+
+    private CoreProcess() {
+        simulator = new ReflectionSimulator();
+    }
+
+    public static void main(String[] args) {
+        new CoreProcess().start();
+    }
+
+    private void start() {
+        System.out.println("Week 4 Core Process");
+        System.out.println("UI -> Core: " + FifoConfig.UI_TO_CORE);
+        System.out.println("Core -> UI: " + FifoConfig.CORE_TO_UI);
+        System.out.println("Core -> Log: " + FifoConfig.CORE_TO_LOG);
+
+        try {
+            FifoUtil.ensureFifo(FifoConfig.UI_TO_CORE);
+            FifoUtil.ensureFifo(FifoConfig.CORE_TO_UI);
+            FifoUtil.ensureFifo(FifoConfig.CORE_TO_LOG);
+
+            startLogSender();
+
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(FifoConfig.UI_TO_CORE),
+                            StandardCharsets.UTF_8));
+                 BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(FifoConfig.CORE_TO_UI),
+                            StandardCharsets.UTF_8))) {
+
+                uiWriter = writer;
+                log("INFO", "Core process connected");
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.equalsIgnoreCase("LOAD")) {
+                        handleLoad(reader);
+                    } else {
+                        boolean keepRunning = handleCommand(line.trim());
+                        if (!keepRunning) {
+                            break;
+                        }
+                    }
+                }
             }
-            logOut.println("INFO|Core process stopped");
+        } catch (Exception e) {
+            System.err.println("Core Process error: " + e.getMessage());
+        } finally {
+            logQueue.offer("INFO|Core process stopped");
+            logQueue.offer("EXIT");
+            logSenderRunning = false;
+            if (logSenderThread != null) {
+                try { logSenderThread.join(2000); }
+                catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            }
         }
     }
 
-    private static String handle(String command, Simulator simulator, PrintWriter log) {
-        try {
-            if (command.startsWith("LOAD|")) {
-                String payload = command.substring(5);
-                String[] program = payload.split("\\|", -1);
-                simulator.loadProgram(program);
-                log.println("INFO|Program loaded with " + program.length + " lines");
-                return "LOAD_OK|" + program.length + " instructions";
+    private void handleLoad(BufferedReader reader) throws IOException {
+        List<String> program = new ArrayList<>();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            if ("END_LOAD".equals(line)) {
+                break;
             }
-            switch (command) {
-                case "STEP": {
-                    Instruction i = simulator.fetch();
-                    if (i == null) return "PROGRAM_FINISHED";
-                    simulator.decode();
-                    simulator.execute();
-                    String status = simulator.getExecutionStatus();
-                    if (status.startsWith("Execution error") || status.startsWith("Unsupported"))
-                        log.println("ERROR|" + status);
-                    else
-                        log.println("INFO|Executed: " + i.getName() +
-                                (i.getOperand().isEmpty() ? "" : " " + i.getOperand()));
-                    return "STEP_OK|" + status + "|TRACE|" + simulator.getExecutionTrace().replace('\n', ';');
-                }
+            if (line.startsWith("PROGRAM|")) {
+                program.add(new String(
+                        java.util.Base64.getDecoder().decode(line.substring(8)),
+                        StandardCharsets.UTF_8));
+            }
+        }
+
+        long start = System.nanoTime();
+        try {
+            simulator.loadProgram(program.toArray(new String[0]));
+            long elapsed = System.nanoTime() - start;
+            log("INFO", "Program loaded (" + program.size() + " instructions)");
+            send("OK|Program loaded|" + elapsed);
+        } catch (Exception e) {
+            log("ERROR", "Program load error: " + e.getMessage());
+            send("ERROR|Program load error: " + e.getMessage());
+        }
+    }
+
+    private boolean handleCommand(String command) throws IOException {
+        if (command.isEmpty()) {
+            send("ERROR|Empty command");
+            log("ERROR", "Empty command");
+            return true;
+        }
+
+        long start = System.nanoTime();
+        try {
+            switch (command.toUpperCase()) {
+                case "STEP":
+                    simulator.step();
+                    logExecution("STEP");
+                    send("OK|STEP|" + buildStatus() + "|TIME_NS=" + (System.nanoTime() - start));
+                    return true;
+
                 case "RUN":
-                    simulator.run();
-                    log.println(simulator.getExecutionStatus().startsWith("Stopped") ?
-                            "ERROR|" + simulator.getExecutionStatus() : "INFO|Program run completed");
-                    return "RUN_OK|" + simulator.getExecutionStatus();
+                    simulator.runWithInstructionLogging(this::logInstruction);
+                    log("INFO", "RUN completed: " + simulator.status());
+                    send("OK|RUN|" + buildStatus() + "|TIME_NS=" + (System.nanoTime() - start));
+                    return true;
+
                 case "RESET":
                     simulator.reset();
-                    log.println("INFO|Simulator reset");
-                    return "RESET_OK";
+                    log("INFO", "Simulator reset");
+                    send("OK|RESET|" + buildStatus() + "|TIME_NS=" + (System.nanoTime() - start));
+                    return true;
+
                 case "SHOW":
-                    return "STATE|" + simulator.getCPU().getState().replace('\n', ';');
-                case "HELP":
-                    return "COMMANDS:LOAD,STEP,RUN,SHOW,RESET,HELP,EXIT";
+                    send("OK|SHOW|" + encodeStatus(buildStatus()) + "|TIME_NS=" + (System.nanoTime() - start));
+                    return true;
+
+                case "EXIT":
+                    log("INFO", "Simulator stopped");
+                    send("OK|EXIT|Core stopping");
+                    return false;
+
                 default:
-                    log.println("ERROR|Unknown core command: " + command);
-                    return "ERROR|Unknown command: " + command;
+                    log("ERROR", "Invalid command: " + command);
+                    send("ERROR|Invalid command: " + command);
+                    return true;
             }
         } catch (Exception e) {
-            log.println("ERROR|" + e.getClass().getSimpleName() + ": " + e.getMessage());
-            return "ERROR|" + e.getMessage();
+            log("ERROR", "Execution error: " + e.getMessage());
+            send("ERROR|" + e.getMessage());
+            return true;
+        }
+    }
+
+    private void logExecution(String operation) {
+        logInstruction(simulator.currentInstructionText());
+        String status = simulator.status();
+        if (status.startsWith("Execution error")) {
+            log("ERROR", status);
+        } else if (status.startsWith("Unsupported")) {
+            log("ERROR", status);
+        } else {
+            log("INFO", operation + " completed: " + status);
+        }
+    }
+
+    private void logInstruction(String instruction) {
+        if (instruction == null) {
+            return;
+        }
+
+        log("INFO", "Instruction executed: " + instruction);
+        String upper = instruction.trim().toUpperCase();
+
+        if (upper.startsWith("PUSH")) log("INFO", "PUSH executed");
+        if (upper.startsWith("POP")) log("INFO", "POP executed");
+        if (upper.startsWith("ENQUEUE")) log("INFO", "ENQUEUE executed");
+        if (upper.startsWith("DEQUEUE")) log("INFO", "DEQUEUE executed");
+    }
+
+    private String buildStatus() {
+        return "STATUS=" + simulator.status()
+                + "\n"
+                + simulator.cpuState()
+                + "\n"
+                + simulator.stackState()
+                + "\n"
+                + simulator.queueState()
+                + "\nTRACE\n"
+                + simulator.trace();
+    }
+
+    private String encodeStatus(String status) {
+        return java.util.Base64.getEncoder().encodeToString(
+                status.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void send(String message) throws IOException {
+        uiWriter.write(message.replace("\n", "\\n"));
+        uiWriter.newLine();
+        uiWriter.flush();
+    }
+
+    private void log(String level, String message) {
+        logQueue.offer(level + "|" + message.replace("\n", " "));
+    }
+
+    private void startLogSender() {
+        Thread thread = new Thread(() -> {
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(FifoConfig.CORE_TO_LOG),
+                            StandardCharsets.UTF_8))) {
+
+                while (logSenderRunning || !logQueue.isEmpty()) {
+                    String message = logQueue.poll();
+                    if (message == null) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                        continue;
+                    }
+                    writer.write(message);
+                    writer.newLine();
+                    writer.flush();
+                    if ("EXIT".equals(message)) {
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Log FIFO unavailable: " + e.getMessage());
+            }
+        }, "week4-core-log-sender");
+        thread.setDaemon(true);
+        logSenderThread = thread;
+        thread.start();
+    }
+
+    private static final class ReflectionSimulator {
+        private final Object simulator;
+        private final java.lang.reflect.Method loadProgram;
+        private final java.lang.reflect.Method step;
+        private final java.lang.reflect.Method run;
+        private final java.lang.reflect.Method reset;
+        private final java.lang.reflect.Method getCPU;
+        private final java.lang.reflect.Method getStack;
+        private final java.lang.reflect.Method getQueue;
+        private final java.lang.reflect.Method getStatus;
+        private final java.lang.reflect.Method getTrace;
+        private final java.lang.reflect.Method getCurrentInstruction;
+
+        ReflectionSimulator() {
+            try {
+                Class<?> clazz = Class.forName("Simulator");
+                simulator = clazz.getConstructor().newInstance();
+                loadProgram = clazz.getMethod("loadProgram", String[].class);
+                step = clazz.getMethod("step");
+                run = clazz.getMethod("run");
+                reset = clazz.getMethod("reset");
+                getCPU = clazz.getMethod("getCPU");
+                getStack = clazz.getMethod("getStack");
+                getQueue = clazz.getMethod("getQueue");
+                getStatus = clazz.getMethod("getExecutionStatus");
+                getTrace = clazz.getMethod("getExecutionTrace");
+                getCurrentInstruction = clazz.getMethod("getCurrentInstruction");
+            } catch (Exception e) {
+                throw new IllegalStateException(
+                        "Week 1-3 Simulator could not be loaded. Compile the full src tree.", e);
+            }
+        }
+
+        void loadProgram(String[] program) throws Exception {
+            invoke(loadProgram, (Object) program);
+        }
+
+        void step() throws Exception { invoke(step); }
+        void run() throws Exception { invoke(run); }
+        void reset() throws Exception { invoke(reset); }
+
+        String status() {
+            try { return String.valueOf(invoke(getStatus)); }
+            catch (Exception e) { return "Unavailable: " + e.getMessage(); }
+        }
+
+        String trace() {
+            try { return String.valueOf(invoke(getTrace)); }
+            catch (Exception e) { return "Unavailable: " + e.getMessage(); }
+        }
+
+        String currentInstructionText() {
+            try {
+                Object instruction = invoke(getCurrentInstruction);
+                return instruction == null ? null : instruction.toString();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        String cpuState() {
+            try {
+                Object cpu = invoke(getCPU);
+                return String.valueOf(cpu.getClass().getMethod("getState").invoke(cpu));
+            } catch (Exception e) {
+                return "CPU STATE\nUnavailable: " + e.getMessage();
+            }
+        }
+
+        String stackState() {
+            try {
+                Object stack = invoke(getStack);
+                return String.valueOf(stack.getClass().getMethod("getState").invoke(stack));
+            } catch (Exception e) {
+                return "STACK\nUnavailable: " + e.getMessage();
+            }
+        }
+
+        String queueState() {
+            try {
+                Object queue = invoke(getQueue);
+                return String.valueOf(queue.getClass().getMethod("getState").invoke(queue));
+            } catch (Exception e) {
+                return "FIFO QUEUE\nUnavailable: " + e.getMessage();
+            }
+        }
+
+        void runWithInstructionLogging(java.util.function.Consumer<String> instructionLogger) throws Exception {
+            int safetyCounter = 0;
+            while (safetyCounter < 1000) {
+                Object cpu = invoke(getCPU);
+                int currentPc = (Integer) cpu.getClass().getMethod("getPC").invoke(cpu);
+                Object memory = invokeMemory();
+                int programSize = (Integer) memory.getClass().getMethod("getProgramSize").invoke(memory);
+
+                if (currentPc >= programSize) {
+                    break;
+                }
+
+                step();
+                instructionLogger.accept(currentInstructionText());
+                safetyCounter++;
+
+                String status = status();
+                if ("Program terminated".equals(status)
+                        || "Program finished".equals(status)
+                        || status.startsWith("Execution error")
+                        || status.startsWith("Unsupported instruction")) {
+                    break;
+                }
+            }
+
+            Object cpu = invoke(getCPU);
+            int currentPc = (Integer) cpu.getClass().getMethod("getPC").invoke(cpu);
+            Object memory = invokeMemory();
+            int programSize = (Integer) memory.getClass().getMethod("getProgramSize").invoke(memory);
+            if ("Running".equals(status()) && currentPc >= programSize) {
+                run();
+            }
+        }
+
+        private Object invokeMemory() throws Exception {
+            return simulator.getClass().getMethod("getMemory").invoke(simulator);
+        }
+
+        private Object invoke(java.lang.reflect.Method method, Object... args) throws Exception {
+            try {
+                return method.invoke(simulator, args);
+            } catch (java.lang.reflect.InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof Exception) throw (Exception) cause;
+                throw e;
+            }
         }
     }
 }
